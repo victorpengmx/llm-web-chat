@@ -1,7 +1,11 @@
 from fastapi import APIRouter, HTTPException
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from uuid import uuid4
 from typing import List
+
+import asyncio
+import time
 
 from model import llm, sampling_params
 from chat_storage import chat_history, save_chat_history
@@ -57,3 +61,28 @@ def delete_entry(entry_id: str):
     deleted = chat_history.pop(entry_id)
     save_chat_history()
     return {"message": "Deleted successfully", "deleted": deleted}
+
+@router.post("/generate/stream")
+async def generate_text_stream(prompt_request: PromptRequest):
+    prompt = prompt_request.prompt
+    entry_id = str(uuid4())
+    request_id = str(time.time())  # Unique request ID
+
+    async def token_stream():
+        results_generator = llm.generate(prompt, sampling_params, request_id=request_id)
+        previous_text = ""
+        full_response = ""
+
+        async for request_output in results_generator:
+            text = request_output.outputs[0].text
+            delta = text[len(previous_text):]
+            previous_text = text
+            full_response = text
+            yield delta
+
+        # Save final response to history
+        chat_history[entry_id] = {"prompt": prompt, "response": full_response.strip()}
+        save_chat_history()
+
+    return StreamingResponse(token_stream(), media_type="text/plain")
+
