@@ -1,4 +1,5 @@
-from fastapi import APIRouter, HTTPException
+from auth.auth import get_current_user
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from uuid import uuid4
@@ -21,41 +22,29 @@ class ChatRecord(BaseModel):
     prompt: str
     response: str
 
-@router.post("/generate", response_model=ChatRecord)
-def generate_text(prompt_request: PromptRequest):
-    prompt = prompt_request.prompt
-    outputs = llm.generate([prompt], sampling_params)
-    response = outputs[0].outputs[0].text.strip()
-
-    entry_id = str(uuid4())
-    chat_history[entry_id] = {"prompt": prompt, "response": response}
-    save_chat_history()
-
-    return ChatRecord(id=entry_id, prompt=prompt, response=response)
-
 @router.get("/history", response_model=List[ChatRecord])
-def get_all_history():
+def get_all_history(user: str = Depends(get_current_user)):
     return [
         ChatRecord(id=entry_id, prompt=record["prompt"], response=record["response"])
         for entry_id, record in chat_history.items()
     ]
 
 @router.get("/history/{entry_id}", response_model=ChatRecord)
-def get_entry(entry_id: str):
+def get_entry(entry_id: str, user: str = Depends(get_current_user)):
     if entry_id not in chat_history:
         raise HTTPException(status_code=404, detail="Entry not found.")
     record = chat_history[entry_id]
     return ChatRecord(id=entry_id, prompt=record["prompt"], response=record["response"])
 
 @router.delete("/history")
-def delete_all():
+def delete_all(user: str = Depends(get_current_user)):
     count = len(chat_history)
     chat_history.clear()
     save_chat_history()
     return {"message": f"Deleted all {count} entries."}
 
 @router.delete("/history/{entry_id}")
-def delete_entry(entry_id: str):
+def delete_entry(entry_id: str, user: str = Depends(get_current_user)):
     if entry_id not in chat_history:
         raise HTTPException(status_code=404, detail="Entry not found.")
     deleted = chat_history.pop(entry_id)
@@ -63,7 +52,7 @@ def delete_entry(entry_id: str):
     return {"message": "Deleted successfully", "deleted": deleted}
 
 @router.post("/generate/stream")
-async def generate_text_stream(prompt_request: PromptRequest):
+async def generate_text_stream(prompt_request: PromptRequest, user: str = Depends(get_current_user)):
     prompt = prompt_request.prompt
     entry_id = str(uuid4())
     request_id = str(time.time())  # Unique request ID

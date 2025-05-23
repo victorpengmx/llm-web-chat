@@ -1,7 +1,7 @@
 import { useState } from "react";
 import "./ChatLayout.css";
 
-const ChatInput = ({ onSend, onStreamUpdate }) => {
+const ChatInput = ({ onSend, onStreamUpdate, authToken }) => {
   const [input, setInput] = useState("");
 
   const handleSend = async () => {
@@ -16,7 +16,8 @@ const ChatInput = ({ onSend, onStreamUpdate }) => {
       const res = await fetch("http://localhost:8000/generate/stream", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+            Authorization: `Bearer ${authToken}`,
+            "Content-Type": "application/json",
         },
         body: JSON.stringify({ prompt }),
       });
@@ -28,7 +29,8 @@ const ChatInput = ({ onSend, onStreamUpdate }) => {
         const { done, value } = await reader.read();
         if (done) break;
 
-        const chunk = decoder.decode(value);
+        const chunk = decoder.decode(value, { stream: true });
+
         onStreamUpdate(chunk);
       }
     } catch (error) {
