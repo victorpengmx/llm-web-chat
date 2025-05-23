@@ -1,43 +1,58 @@
 import { useState } from "react";
+import "./ChatLayout.css";
 
 const ChatInput = ({ onSend, onStreamUpdate }) => {
   const [input, setInput] = useState("");
 
   const handleSend = async () => {
-    if (!input.trim()) return;
+    const prompt = input.trim();
+    if (!prompt) return;
 
-    onSend(input); // Add the prompt with empty response
-    const prompt = input;
-    setInput(""); // Clear input
+    // Add prompt to chat with empty response first
+    onSend(prompt);
+    setInput(""); // Clear the input field
 
-    const res = await fetch("http://localhost:8000/generate/stream", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ prompt }),
-    });
+    try {
+      const res = await fetch("http://localhost:8000/generate/stream", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ prompt }),
+      });
 
-    const reader = res.body.getReader();
-    const decoder = new TextDecoder("utf-8");
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder("utf-8");
 
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
 
-      const chunk = decoder.decode(value);
-      onStreamUpdate(chunk); // Append to the current response
+        const chunk = decoder.decode(value);
+        onStreamUpdate(chunk);
+      }
+    } catch (error) {
+      console.error("Streaming error:", error);
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
     }
   };
 
   return (
-    <div className="flex gap-2">
-      <input
-        className="flex-1 border rounded p-2"
+    <div className="chat-input-container">
+      <textarea
+        className="chat-input"
         placeholder="Type your prompt..."
         value={input}
         onChange={(e) => setInput(e.target.value)}
-        onKeyDown={(e) => e.key === "Enter" && handleSend()}
+        onKeyDown={handleKeyDown}
       />
-      <button onClick={handleSend} className="px-4 py-2 bg-blue-500 text-white rounded">
+      <button onClick={handleSend} className="chat-button">
         Send
       </button>
     </div>
