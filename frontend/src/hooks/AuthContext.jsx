@@ -1,12 +1,11 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 
-// Create the context
 const AuthContext = createContext(null);
 
-// Provider component
 export function AuthProvider({ children }) {
   const [token, setTokenState] = useState(() => localStorage.getItem("token"));
   const [username, setUsername] = useState(() => localStorage.getItem("username"));
+  const [onLogoutCallbacks, setOnLogoutCallbacks] = useState([]);
 
   useEffect(() => {
     if (token) localStorage.setItem("token", token);
@@ -26,16 +25,20 @@ export function AuthProvider({ children }) {
   const logout = () => {
     setTokenState(null);
     setUsername(null);
+    onLogoutCallbacks.forEach((cb) => cb());
+  };
+
+  const registerOnLogout = (cb) => {
+    setOnLogoutCallbacks((prev) => [...prev, cb]);
   };
 
   return (
-    <AuthContext.Provider value={{ token, username, setToken, logout }}>
+    <AuthContext.Provider value={{ token, username, setToken, logout, registerOnLogout }}>
       {children}
     </AuthContext.Provider>
   );
 }
 
-// Hook to use the auth context in components
 export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) {

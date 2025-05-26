@@ -33,6 +33,12 @@ const ChatInput = ({ onSend, onStreamUpdate, authToken }) => {
 
         onStreamUpdate(chunk);
       }
+
+      // Re-sync from backend after response is done
+      if (refreshHistory) {
+        refreshHistory();
+      }
+
     } catch (error) {
       console.error("Streaming error:", error);
     }

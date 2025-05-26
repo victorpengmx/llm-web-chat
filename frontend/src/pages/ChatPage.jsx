@@ -5,8 +5,13 @@ import ChatWindow from "../components/ChatWindow";
 import ChatInput from "../components/ChatInput";
 
 const ChatPage = () => {
-  const { token: authToken, username, logout } = useAuth();
+  const { token: authToken, username, logout, registerOnLogout } = useAuth();
   const [messages, setMessages] = useState([]);
+
+  // Clear messages on logout
+  useEffect(() => {
+    registerOnLogout(() => setMessages([]));
+  }, [registerOnLogout]);
 
   useEffect(() => {
     if (!authToken) return;
@@ -37,16 +42,16 @@ const ChatPage = () => {
   };
 
   const handleStreamUpdate = (delta) => {
-  setMessages((prev) => {
-    const updated = [...prev];
-    const last = updated[updated.length - 1];
-    updated[updated.length - 1] = {
-      ...last,
-      response: last.response + delta,
-    };
-    return updated;
-  });
-};
+    setMessages((prev) => {
+      const updated = [...prev];
+      const last = updated[updated.length - 1];
+      updated[updated.length - 1] = {
+        ...last,
+        response: last.response + delta,
+      };
+      return updated;
+    });
+  };
 
   return (
     <div className="chat-page flex h-screen">
@@ -57,6 +62,16 @@ const ChatPage = () => {
           authToken={authToken}
           onSend={handleSend}
           onStreamUpdate={handleStreamUpdate}
+          refreshHistory={() => {
+            fetch("http://localhost:8000/history", {
+              headers: {
+                Authorization: `Bearer ${authToken}`,
+              },
+            })
+              .then((res) => res.json())
+              .then(setMessages)
+              .catch(console.error);
+          }}
         />
       </div>
     </div>
