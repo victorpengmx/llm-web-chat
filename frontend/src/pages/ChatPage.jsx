@@ -18,8 +18,6 @@ const ChatPage = () => {
             setSessions([]);
             setActiveSession(null);
         });
-    // Only run once on mount
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     // Load sessions on mount
@@ -107,18 +105,29 @@ const ChatPage = () => {
         ...prev,
         { id: Date.now().toString(), prompt, response: "" },
         ]);
+        setIsGenerating(true);
+        setErrorMessage(null);
     };
 
-    const handleStreamUpdate = (delta) => {
+    const handleStreamUpdate = (delta, isDone = false, isError = false, errorMsg = null) => {
         setMessages((prev) => {
             const updated = [...prev];
             const last = updated[updated.length - 1];
+            if (!last) return prev;
             updated[updated.length - 1] = {
                 ...last,
                 response: last.response + delta,
             };
             return updated;
         });
+
+        // If the stream ends or fails, re-enable input
+        if (isDone || isError) {
+            setIsGenerating(false);
+            if (isError) {
+                setErrorMessage(errorMsg);
+            }
+        }
     };
 
     return (

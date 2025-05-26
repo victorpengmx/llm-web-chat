@@ -2,6 +2,7 @@ from auth.auth import get_current_user
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
+from rate_limit import rate_limiter
 from uuid import uuid4
 from typing import List, Dict
 
@@ -72,7 +73,12 @@ def get_session_history(session_id: str, user: str = Depends(get_current_user)):
 
 # Generate response and stream + save it to a session
 @router.post("/generate/stream/{session_id}")
-async def generate_text_stream(session_id: str, prompt_request: PromptRequest, user: str = Depends(get_current_user)):
+async def generate_text_stream(
+    session_id: str, 
+    prompt_request: PromptRequest, 
+    user: str = Depends(get_current_user),
+    rate_limiter_dep = Depends(rate_limiter)
+):
     prompt = prompt_request.prompt
     entry_id = str(uuid4())
     request_id = str(time.time())
