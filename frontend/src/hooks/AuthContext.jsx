@@ -29,8 +29,12 @@ export function AuthProvider({ children }) {
   };
 
   const registerOnLogout = (cb) => {
-    setOnLogoutCallbacks((prev) => [...prev, cb]);
+  setOnLogoutCallbacks((prev) => [...prev, cb]);
+  return () => {
+    setOnLogoutCallbacks((prev) => prev.filter((fn) => fn !== cb));
   };
+};
+
 
   return (
     <AuthContext.Provider value={{ token, username, setToken, logout, registerOnLogout }}>

@@ -9,10 +9,11 @@ CHAT_HISTORY_FILE = "storage/chat_history.json"
 os.makedirs(os.path.dirname(CHAT_HISTORY_FILE), exist_ok=True)
 
 # In-memory store for chat history
-chat_history: Dict[str, Dict[str, str]] = {}
+# Structure: { user_id: { session_id: { entry_id: {prompt, response} } } }
+chat_history: Dict[str, Dict[str, Dict[str, Dict[str, str]]]] = {}
 
 # Load existing chat history from file if it exists
-def load_chat_history() -> Dict[str, Dict[str, str]]:
+def load_chat_history() -> Dict[str, Dict[str, Dict[str, Dict[str, str]]]]:
     if os.path.exists(CHAT_HISTORY_FILE):
         with open(CHAT_HISTORY_FILE, "r") as f:
             return json.load(f)

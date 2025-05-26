@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from uuid import uuid4
-from typing import List
+from typing import List, Dict
 
 import asyncio
 import time
@@ -13,57 +13,72 @@ from chat_storage import chat_history, save_chat_history
 
 router = APIRouter()
 
-# Pydantic models
-class PromptRequest(BaseModel):
-    prompt: str
-
+# Models
 class ChatRecord(BaseModel):
     id: str
     prompt: str
     response: str
 
+class PromptRequest(BaseModel):
+    prompt: str
 
-@router.get("/history", response_model=List[ChatRecord])
-def get_user_history(user: str = Depends(get_current_user)):
-    entries = chat_history.get(user, {})
+class SessionPreview(BaseModel):
+    id: str
+    preview: str
+
+# Get all sessions for the current user
+@router.get("/sessions", response_model=List[SessionPreview])
+def list_sessions(user: str = Depends(get_current_user)):
+    sessions = chat_history.get(user, {})
+    previews = []
+    for session_id, entries in sessions.items():
+        first_prompt = ""
+        if entries:
+            first_entry = next(iter(entries.values()))
+            first_prompt = first_entry["prompt"][:20]
+        previews.append(SessionPreview(id=session_id, preview=first_prompt))
+    return previews
+
+# Create a new session
+@router.post("/sessions")
+def create_session(user: str = Depends(get_current_user)):
+    session_id = str(uuid4())
+    if user not in chat_history:
+        chat_history[user] = {}
+    chat_history[user][session_id] = {}
+    save_chat_history()
+    return {"session_id": session_id}
+
+# Delete a session
+@router.delete("/sessions/{session_id}")
+def delete_session(session_id: str, user: str = Depends(get_current_user)):
+    if user not in chat_history or session_id not in chat_history[user]:
+        raise HTTPException(status_code=404, detail="Session not found.")
+    del chat_history[user][session_id]
+    save_chat_history()
+    return {"message": "Session deleted."}
+
+# Get full chat history from a specific session
+@router.get("/sessions/{session_id}/history", response_model=List[ChatRecord])
+def get_session_history(session_id: str, user: str = Depends(get_current_user)):
+    user_sessions = chat_history.get(user, {})
+    if session_id not in user_sessions:
+        raise HTTPException(status_code=404, detail="Session not found.")
+    session_entries = user_sessions[session_id]
     return [
-        ChatRecord(id=entry_id, prompt=record["prompt"], response=record["response"])
-        for entry_id, record in entries.items()
+        ChatRecord(id=entry_id, prompt=entry["prompt"], response=entry["response"])
+        for entry_id, entry in session_entries.items()
     ]
 
-
-@router.get("/history/{entry_id}", response_model=ChatRecord)
-def get_entry(entry_id: str, user: str = Depends(get_current_user)):
-    user_entries = chat_history.get(user, {})
-    if entry_id not in user_entries:
-        raise HTTPException(status_code=404, detail="Entry not found.")
-    record = user_entries[entry_id]
-    return ChatRecord(id=entry_id, prompt=record["prompt"], response=record["response"])
-
-
-@router.delete("/history")
-def delete_all(user: str = Depends(get_current_user)):
-    count = len(chat_history.get(user, {}))
-    chat_history[user] = {}
-    save_chat_history()
-    return {"message": f"Deleted all {count} entries."}
-
-
-@router.delete("/history/{entry_id}")
-def delete_entry(entry_id: str, user: str = Depends(get_current_user)):
-    user_entries = chat_history.get(user, {})
-    if entry_id not in user_entries:
-        raise HTTPException(status_code=404, detail="Entry not found.")
-    deleted = user_entries.pop(entry_id)
-    save_chat_history()
-    return {"message": "Deleted successfully", "deleted": deleted}
-
-
-@router.post("/generate/stream")
-async def generate_text_stream(prompt_request: PromptRequest, user: str = Depends(get_current_user)):
+# Generate response and stream + save it to a session
+@router.post("/generate/stream/{session_id}")
+async def generate_text_stream(session_id: str, prompt_request: PromptRequest, user: str = Depends(get_current_user)):
     prompt = prompt_request.prompt
     entry_id = str(uuid4())
     request_id = str(time.time())
+
+    if user not in chat_history or session_id not in chat_history[user]:
+        raise HTTPException(status_code=404, detail="Session not found.")
 
     async def token_stream():
         results_generator = llm.generate(prompt, sampling_params, request_id=request_id)
@@ -77,11 +92,7 @@ async def generate_text_stream(prompt_request: PromptRequest, user: str = Depend
             full_response = text
             yield delta
 
-        # Save response per user
-        if user not in chat_history:
-            chat_history[user] = {}
-
-        chat_history[user][entry_id] = {
+        chat_history[user][session_id][entry_id] = {
             "prompt": prompt,
             "response": full_response.strip()
         }

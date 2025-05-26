@@ -1,66 +1,57 @@
 import { useState } from "react";
-import "./ChatLayout.css";
+import "./ChatLayout.css"
 
-const ChatInput = ({ onSend, onStreamUpdate, authToken }) => {
+const ChatInput = ({ authToken, sessionId, onSend, onStreamUpdate, refreshHistory }) => {
   const [input, setInput] = useState("");
 
-  const handleSend = async () => {
+  const handleSubmit = async () => {
+    if (!input.trim()) return;
+
     const prompt = input.trim();
-    if (!prompt) return;
-
-    // Add prompt to chat with empty response first
+    setInput("");
     onSend(prompt);
-    setInput(""); // Clear the input field
 
-    try {
-      const res = await fetch("http://localhost:8000/generate/stream", {
-        method: "POST",
-        headers: {
-            Authorization: `Bearer ${authToken}`,
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ prompt }),
-      });
+    const res = await fetch(`http://localhost:8000/generate/stream/${sessionId}`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ prompt }),
+    });
 
-      const reader = res.body.getReader();
-      const decoder = new TextDecoder("utf-8");
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        const chunk = decoder.decode(value, { stream: true });
-
-        onStreamUpdate(chunk);
-      }
-
-      // Re-sync from backend after response is done
-      if (refreshHistory) {
-        refreshHistory();
-      }
-
-    } catch (error) {
-      console.error("Streaming error:", error);
+    if (!res.ok || !res.body) {
+      console.error("Failed to stream response");
+      return;
     }
-  };
 
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      const chunk = decoder.decode(value);
+      onStreamUpdate(chunk);
     }
+
+    refreshHistory();
   };
 
   return (
-    <div className="chat-input-container">
-      <textarea
-        className="chat-input"
-        placeholder="Type your prompt..."
+    <div className="p-4 border-t flex">
+      <input
+        type="text"
         value={input}
         onChange={(e) => setInput(e.target.value)}
-        onKeyDown={handleKeyDown}
+        onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
+        className="flex-1 px-4 py-2 border rounded mr-2"
+        placeholder="Type your prompt..."
       />
-      <button onClick={handleSend} className="chat-button">
+      <button
+        onClick={handleSubmit}
+        className="bg-blue-500 text-white px-4 py-2 rounded"
+      >
         Send
       </button>
     </div>
