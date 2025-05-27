@@ -19,9 +19,11 @@ const Monitor = () => {
     };
 
     fetchMonitorData();
+    const interval = setInterval(fetchMonitorData, 2000); // Refresh every 2s
+    return () => clearInterval(interval);
   }, []);
 
-  const { gpu, memory, inference_time_ms } = data || {};
+  const { gpus = [], memory, inference_time_ms } = data || {};
 
   return (
     <div className="p-6">
@@ -42,14 +44,18 @@ const Monitor = () => {
         <div className="text-gray-600">Loading monitoring data...</div>
       ) : (
         <>
-          {gpu ? (
+          {gpus.length > 0 ? (
             <div className="mb-4">
-              <h2 className="font-medium text-gray-700">GPU</h2>
-              <p>Name: {gpu.name}</p>
-              <p>Utilization: {gpu.utilization}%</p>
-              <p>
-                Memory Used: {gpu.memory_used} MB / {gpu.memory_total} MB
-              </p>
+              <h2 className="font-medium text-gray-700 mb-2">GPUs</h2>
+              {gpus.map((gpu) => (
+                <div key={gpu.index} className="mb-2 border p-3 rounded bg-gray-50 shadow">
+                  <p className="font-semibold">GPU {gpu.index}: {gpu.name}</p>
+                  <p>Utilization: {gpu.utilization}%</p>
+                  <p>
+                    Memory Used: {gpu.memory_used} MB / {gpu.memory_total} MB
+                  </p>
+                </div>
+              ))}
             </div>
           ) : (
             <p className="text-gray-600">GPU data not available.</p>

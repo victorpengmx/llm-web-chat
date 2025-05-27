@@ -63,3 +63,36 @@
 [2025-05-27 14:36:39,229] [INFO] [user2] Accessed history for session: afb2e9fb-4a20-4e7d-9a1e-95eefd8d1884
 [2025-05-27 14:36:39,231] [INFO] [user2] Requested session list.
 [2025-05-27 14:37:07,807] [INFO] FastAPI application is shutting down.
+[2025-05-27 14:47:07,489] [INFO] Starting uvicorn server...
+[2025-05-27 14:47:07,503] [INFO] FastAPI application is starting up.
+[2025-05-27 14:47:45,330] [INFO] [user2] Requested session list.
+[2025-05-27 14:47:45,332] [INFO] [user2] Requested session list.
+[2025-05-27 14:47:45,336] [INFO] [user2] Accessed history for session: afb2e9fb-4a20-4e7d-9a1e-95eefd8d1884
+[2025-05-27 14:47:45,338] [INFO] [user2] Requested session list.
+[2025-05-27 14:48:05,319] [INFO] [user1] Created new session: 9e71f55a-1d4e-4d60-ac7f-b66304fcc46a
+[2025-05-27 14:48:05,321] [INFO] [user1] Requested session list.
+[2025-05-27 14:48:05,325] [INFO] [user1] Accessed history for session: 9e71f55a-1d4e-4d60-ac7f-b66304fcc46a
+[2025-05-27 14:48:05,326] [INFO] [user1] Requested session list.
+[2025-05-27 14:48:39,529] [INFO] [user1] Generating response for session 9e71f55a-1d4e-4d60-ac7f-b66304fcc46a with prompt: Explain how APFSDS works....
+[2025-05-27 14:48:57,422] [INFO] [user1] Inference took 17893 ms for session 9e71f55a-1d4e-4d60-ac7f-b66304fcc46a
+[2025-05-27 14:48:57,427] [INFO] [user1] Accessed history for session: 9e71f55a-1d4e-4d60-ac7f-b66304fcc46a
+[2025-05-27 14:48:57,429] [INFO] [user1] Requested session list.
+[2025-05-27 14:49:27,242] [INFO] [user1] Generating response for session 9e71f55a-1d4e-4d60-ac7f-b66304fcc46a with prompt: explain how Armour Piercing Fi...
+[2025-05-27 14:49:45,117] [INFO] [user1] Inference took 17875 ms for session 9e71f55a-1d4e-4d60-ac7f-b66304fcc46a
+[2025-05-27 14:49:45,122] [INFO] [user1] Accessed history for session: 9e71f55a-1d4e-4d60-ac7f-b66304fcc46a
+[2025-05-27 14:49:45,124] [INFO] [user1] Requested session list.
+[2025-05-27 14:50:55,559] [INFO] [user2] Requested session list.
+[2025-05-27 14:50:55,560] [INFO] [user2] Requested session list.
+[2025-05-27 14:50:55,563] [INFO] [user2] Accessed history for session: afb2e9fb-4a20-4e7d-9a1e-95eefd8d1884
+[2025-05-27 14:50:55,565] [INFO] [user2] Requested session list.
+[2025-05-27 14:52:34,573] [INFO] FastAPI application is shutting down.
+[2025-05-27 14:53:00,229] [INFO] Starting uvicorn server...
+[2025-05-27 14:53:00,242] [INFO] FastAPI application is starting up.
+[2025-05-27 14:53:07,110] [INFO] [user2] Requested session list.
+[2025-05-27 14:53:07,112] [INFO] [user2] Requested session list.
+[2025-05-27 14:53:07,114] [INFO] [user2] Accessed history for session: afb2e9fb-4a20-4e7d-9a1e-95eefd8d1884
+[2025-05-27 14:53:07,117] [INFO] [user2] Requested session list.
+[2025-05-27 14:53:50,653] [INFO] [user2] Requested session list.
+[2025-05-27 14:53:50,655] [INFO] [user2] Requested session list.
+[2025-05-27 14:53:50,657] [INFO] [user2] Accessed history for session: afb2e9fb-4a20-4e7d-9a1e-95eefd8d1884
+[2025-05-27 14:53:50,659] [INFO] [user2] Requested session list.
