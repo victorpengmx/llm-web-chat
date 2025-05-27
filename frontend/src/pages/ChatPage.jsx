@@ -33,8 +33,9 @@ const ChatPage = () => {
         });
         if (!res.ok) throw new Error("Failed to fetch sessions");
         const data = await res.json();
-        setSessions(data);
         // Auto-load the first session
+        setSessions(data);
+
         } catch (error) {
         console.error(error);
         }
@@ -45,7 +46,6 @@ const ChatPage = () => {
             switchToSession(sessions[0].id);
         }
     }, [sessions, activeSession]);
-
 
     const switchToSession = async (sessionId) => {
         setActiveSession(sessionId);
@@ -99,14 +99,11 @@ const ChatPage = () => {
         }
     };
 
-
     const handleSend = (prompt) => {
         setMessages((prev) => [
         ...prev,
         { id: Date.now().toString(), prompt, response: "" },
         ]);
-        setIsGenerating(true);
-        setErrorMessage(null);
     };
 
     const handleStreamUpdate = (delta, isDone = false, isError = false, errorMsg = null) => {
@@ -124,9 +121,6 @@ const ChatPage = () => {
         // If the stream ends or fails, re-enable input
         if (isDone || isError) {
             setIsGenerating(false);
-            if (isError) {
-                setErrorMessage(errorMsg);
-            }
         }
     };
 

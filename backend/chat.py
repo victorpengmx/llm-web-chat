@@ -1,6 +1,8 @@
 from auth.auth import get_current_user
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import StreamingResponse
+from functools import wraps
+from monitor import router as monitor_router, track_latency
 from pydantic import BaseModel
 from rate_limit import rate_limiter
 from uuid import uuid4
@@ -26,6 +28,19 @@ class PromptRequest(BaseModel):
 class SessionPreview(BaseModel):
     id: str
     preview: str
+
+
+def track_latency(func):
+    @wraps(func)
+    async def wrapper(*args, **kwargs):
+        start = time.perf_counter()
+        try:
+            return await func(*args, **kwargs)
+        finally:
+            latency = time.perf_counter() - start
+            print(f"[Latency] {func.__name__}: {latency:.4f}s")
+    return wrapper
+
 
 # Get all sessions for the current user
 @router.get("/sessions", response_model=List[SessionPreview])
@@ -74,8 +89,9 @@ def get_session_history(session_id: str, user: str = Depends(get_current_user)):
 # Generate response and stream + save it to a session
 @router.post("/generate/stream/{session_id}")
 async def generate_text_stream(
-    session_id: str, 
-    prompt_request: PromptRequest, 
+    session_id: str,
+    prompt_request: PromptRequest,
+    request: Request,
     user: str = Depends(get_current_user),
     rate_limiter_dep = Depends(rate_limiter)
 ):
@@ -87,6 +103,8 @@ async def generate_text_stream(
         raise HTTPException(status_code=404, detail="Session not found.")
 
     async def token_stream():
+        start_time = time.perf_counter()
+
         results_generator = llm.generate(prompt, sampling_params, request_id=request_id)
         previous_text = ""
         full_response = ""
@@ -97,6 +115,11 @@ async def generate_text_stream(
             previous_text = text
             full_response = text
             yield delta
+
+        end_time = time.perf_counter()
+        inference_time_ms = round((end_time - start_time) * 1000)
+        request.app.state.last_inference_time_ms = inference_time_ms
+        print(f"[INFO] Tracked inference time: {inference_time_ms} ms")
 
         chat_history[user][session_id][entry_id] = {
             "prompt": prompt,
