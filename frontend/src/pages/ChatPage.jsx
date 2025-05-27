@@ -50,12 +50,16 @@ const ChatPage = () => {
     const switchToSession = async (sessionId) => {
         setActiveSession(sessionId);
         try {
-        const res = await fetch(`http://localhost:8000/sessions/${sessionId}/history`, {
-            headers: { Authorization: `Bearer ${authToken}` },
-        });
-        if (!res.ok) throw new Error("Failed to fetch session history");
-        const data = await res.json();
-        setMessages(data);
+            const res = await fetch(`http://localhost:8000/sessions/${sessionId}/history`, {
+                headers: { Authorization: `Bearer ${authToken}` },
+            });
+            if (!res.ok) throw new Error("Failed to fetch session history");
+            const data = await res.json();
+            setMessages(data);
+
+            // Refresh session previews
+            await fetchSessions();
+
         } catch (error) {
         console.error(error);
         }

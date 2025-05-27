@@ -43,3 +43,23 @@
 [2025-05-27 14:20:28,765] [INFO] [user2] Deleted session: 20305c50-78b1-4d08-ae32-730bd5a2f30a
 [2025-05-27 14:20:28,768] [INFO] [user2] Accessed history for session: afb2e9fb-4a20-4e7d-9a1e-95eefd8d1884
 [2025-05-27 14:25:28,588] [INFO] FastAPI application is shutting down.
+[2025-05-27 14:31:13,286] [INFO] Starting uvicorn server...
+[2025-05-27 14:31:13,300] [INFO] FastAPI application is starting up.
+[2025-05-27 14:31:17,194] [INFO] [AUTH] User 'user2' logged in successfully.
+[2025-05-27 14:31:17,222] [INFO] [user2] Requested session list.
+[2025-05-27 14:31:17,224] [INFO] [user2] Requested session list.
+[2025-05-27 14:31:17,229] [INFO] [user2] Accessed history for session: afb2e9fb-4a20-4e7d-9a1e-95eefd8d1884
+[2025-05-27 14:31:17,231] [INFO] [user2] Requested session list.
+[2025-05-27 14:31:20,456] [INFO] [user2] Created new session: d296ee19-5998-4908-8e54-774d5ab263f3
+[2025-05-27 14:31:20,460] [INFO] [user2] Requested session list.
+[2025-05-27 14:31:20,463] [INFO] [user2] Accessed history for session: d296ee19-5998-4908-8e54-774d5ab263f3
+[2025-05-27 14:31:20,466] [INFO] [user2] Requested session list.
+[2025-05-27 14:35:11,909] [INFO] [user2] Generating response for session d296ee19-5998-4908-8e54-774d5ab263f3 with prompt: What is 1 + 1?...
+[2025-05-27 14:35:29,530] [INFO] [user2] Inference took 17621 ms for session d296ee19-5998-4908-8e54-774d5ab263f3
+[2025-05-27 14:35:29,535] [INFO] [user2] Accessed history for session: d296ee19-5998-4908-8e54-774d5ab263f3
+[2025-05-27 14:35:29,538] [INFO] [user2] Requested session list.
+[2025-05-27 14:36:39,225] [INFO] [user2] Requested session list.
+[2025-05-27 14:36:39,227] [INFO] [user2] Requested session list.
+[2025-05-27 14:36:39,229] [INFO] [user2] Accessed history for session: afb2e9fb-4a20-4e7d-9a1e-95eefd8d1884
+[2025-05-27 14:36:39,231] [INFO] [user2] Requested session list.
+[2025-05-27 14:37:07,807] [INFO] FastAPI application is shutting down.
