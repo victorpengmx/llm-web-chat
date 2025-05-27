@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "./ChatLayout.css";
+import { Form, Button, InputGroup, Alert } from "react-bootstrap";
 
 const ChatInput = ({
   authToken,
@@ -16,7 +16,7 @@ const ChatInput = ({
     if (!input.trim() || isGenerating) return;
 
     const prompt = input.trim();
-    setInput("");
+    setInput(""); // Clear input before sending
     setIsGenerating(true);
     setErrorMessage(null);
 
@@ -64,36 +64,44 @@ const ChatInput = ({
     }
   };
 
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault(); // prevent newline
+      handleSubmit();
+    }
+  };
+
   return (
-    <div className="p-4 border-t flex flex-col space-y-2">
-      <div className="flex">
-        <input
-          type="text"
-          value={input}
-          disabled={isGenerating}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
-          className="flex-1 px-4 py-2 border rounded mr-2"
-          placeholder={
-            isGenerating
-              ? "Please wait for the response..."
-              : "Type your prompt..."
-          }
-        />
-        <button
-          onClick={handleSubmit}
-          disabled={isGenerating}
-          className={`px-4 py-2 rounded text-white ${
-            isGenerating ? "bg-gray-400" : "bg-blue-500 hover:bg-blue-600"
-          }`}
-        >
-          Send
-        </button>
-      </div>
+    <Form className="p-3 border-top bg-light">
+      <Form.Group controlId="chatInput">
+        <InputGroup>
+          <Form.Control
+            as="textarea"
+            rows={3}
+            placeholder={
+              isGenerating
+                ? "Please wait for the response..."
+                : "Type your prompt here..."
+            }
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+          />
+          <Button
+            variant="primary"
+            onClick={handleSubmit}
+            disabled={isGenerating}
+          >
+            Send
+          </Button>
+        </InputGroup>
+      </Form.Group>
       {errorMessage && (
-        <div className="text-red-500 text-sm">{errorMessage}</div>
+        <Alert variant="danger" className="mt-2">
+          {errorMessage}
+        </Alert>
       )}
-    </div>
+    </Form>
   );
 };
 

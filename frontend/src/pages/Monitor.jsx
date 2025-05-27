@@ -1,5 +1,13 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import {
+  Container,
+  Button,
+  Card,
+  Alert,
+  Row,
+  Col,
+} from "react-bootstrap";
 
 const Monitor = () => {
   const [data, setData] = useState(null);
@@ -26,59 +34,65 @@ const Monitor = () => {
   const { gpus = [], memory, inference_time_ms } = data || {};
 
   return (
-    <div className="p-6">
+    <Container className="py-4">
       <div className="mb-4">
-        <button
-          onClick={() => navigate("/")}
-          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-        >
+        <Button variant="primary" onClick={() => navigate("/")}>
           Back to Chat
-        </button>
+        </Button>
       </div>
 
-      <h1 className="text-xl font-semibold mb-4">Monitoring Dashboard</h1>
+      <h1 className="mb-4">Monitoring Dashboard</h1>
 
       {error ? (
-        <div className="text-red-600">Error: {error}</div>
+        <Alert variant="danger">Error: {error}</Alert>
       ) : !data ? (
-        <div className="text-gray-600">Loading monitoring data...</div>
+        <div className="text-center text-muted">
+          Loading monitoring data...
+        </div>
       ) : (
         <>
           {gpus.length > 0 ? (
-            <div className="mb-4">
-              <h2 className="font-medium text-gray-700 mb-2">GPUs</h2>
-              {gpus.map((gpu) => (
-                <div key={gpu.index} className="mb-2 border p-3 rounded bg-gray-50 shadow">
-                  <p className="font-semibold">GPU {gpu.index}: {gpu.name}</p>
-                  <p>Utilization: {gpu.utilization}%</p>
-                  <p>
-                    Memory Used: {gpu.memory_used} MB / {gpu.memory_total} MB
-                  </p>
-                </div>
-              ))}
-            </div>
+            <>
+              <h4 className="mb-3 text-secondary">GPUs</h4>
+              <Row>
+                {gpus.map((gpu) => (
+                  <Col key={gpu.index} md={6} lg={4} className="mb-4">
+                    <Card>
+                      <Card.Body>
+                        <Card.Title>GPU {gpu.index}: {gpu.name}</Card.Title>
+                        <Card.Text>
+                          <strong>Utilization:</strong> {gpu.utilization}%<br />
+                          <strong>Memory Used:</strong> {gpu.memory_used} MB / {gpu.memory_total} MB
+                        </Card.Text>
+                      </Card.Body>
+                    </Card>
+                  </Col>
+                ))}
+              </Row>
+            </>
           ) : (
-            <p className="text-gray-600">GPU data not available.</p>
+            <p className="text-muted">GPU data not available.</p>
           )}
 
           {memory ? (
-            <div className="mb-4">
-              <h2 className="font-medium text-gray-700">System Memory</h2>
+            <>
+              <h4 className="mt-4 text-secondary">System Memory</h4>
               <p>
-                Used: {memory.used} MB / {memory.total} MB
+                <strong>Used:</strong> {memory.used} MB / {memory.total} MB
               </p>
-            </div>
+            </>
           ) : (
-            <p className="text-gray-600">Memory data not available.</p>
+            <p className="text-muted">Memory data not available.</p>
           )}
 
-          <div>
-            <h2 className="font-medium text-gray-700">Inference</h2>
-            <p>Last inference time: {inference_time_ms ?? "N/A"} ms</p>
-          </div>
+          <h4 className="mt-4 text-secondary">Inference</h4>
+          <p>
+            <strong>Last inference time:</strong>{" "}
+            {inference_time_ms !== undefined ? `${inference_time_ms} ms` : "N/A"}
+          </p>
         </>
       )}
-    </div>
+    </Container>
   );
 };
 

@@ -1,8 +1,16 @@
+import { Card } from "react-bootstrap";
+
 const MessagePair = ({ prompt, response }) => (
-  <div className="chat-container">
-    <p><strong>User:</strong> {prompt}</p>
-    <p><strong>AI:</strong> {response}</p>
-  </div>
+  <Card className="mb-3">
+    <Card.Body>
+      <Card.Text>
+        <strong>User:</strong> {prompt}
+      </Card.Text>
+      <Card.Text>
+        <strong>AI:</strong> {response}
+      </Card.Text>
+    </Card.Body>
+  </Card>
 );
 
 export default MessagePair;

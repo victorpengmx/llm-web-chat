@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { Button, Container, ListGroup } from "react-bootstrap";
 
 const Sidebar = ({
   username,
@@ -16,65 +17,62 @@ const Sidebar = ({
   };
 
   return (
-    <div className="w-64 h-full bg-white border-r p-4 flex flex-col justify-between">
-      <div className="flex flex-col space-y-4">
-        <div>
-          <h2 className="text-lg font-semibold text-gray-800">Chat App</h2>
-          <p className="mt-2 text-sm text-gray-600">
-            Logged in as <strong>{username}</strong>
-          </p>
-          <button
-            onClick={onLogout}
-            className="mt-2 text-sm text-red-600 hover:underline self-start"
-          >
-            Logout
-          </button>
-        </div>
-
-        <button
-          onClick={goToMonitor}
-          className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
-        >
-          Monitoring Dashboard
-        </button>
-
-        <button
-          onClick={onNewSession}
-          className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
-        >
-          + New Chat
-        </button>
-
-        <div className="mt-4">
-          <h3 className="text-sm font-medium text-gray-700 mb-2">Sessions</h3>
-          <div className="flex flex-col space-y-1 max-h-[60vh] overflow-y-auto">
-            {sessions.map((session) => (
-              <div
-                key={session.id}
-                className={`flex items-center justify-between px-2 py-1 rounded ${
-                  session.id === activeSession
-                    ? "bg-blue-100 text-blue-800 font-semibold"
-                    : "hover:bg-gray-100 text-gray-700"
-                }`}
-              >
-                <button
-                  onClick={() => onSwitchSession(session.id)}
-                  className="flex-1 text-left truncate"
-                >
-                  {session.preview || "(empty)"}
-                </button>
-                <button
-                  onClick={() => onDeleteSession(session.id)}
-                  className="ml-2 text-sm text-red-600 hover:underline"
-                >
-                  Delete
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
+    <Container
+      fluid
+      className="bg-light border-end d-flex flex-column p-3"
+      style={{ width: "280px", height: "100vh" }}
+    >
+      <div>
+        <h5>Chat App</h5>
+        <p className="text-muted mb-1">
+          Logged in as <strong>{username}</strong>
+        </p>
+        <Button variant="secondary" size="sm" onClick={onLogout}>
+          Logout
+        </Button>
       </div>
-    </div>
+
+      <div className="my-3">
+        <Button variant="success" className="w-100 mb-2" onClick={goToMonitor}>
+          Monitoring Dashboard
+        </Button>
+        <Button variant="primary" className="w-100" onClick={onNewSession}>
+          + New Chat
+        </Button>
+      </div>
+
+      <div className="flex-grow-1 overflow-auto">
+        <h6 className="text-secondary mt-2">Sessions</h6>
+        <ListGroup>
+          {sessions.map((session) => (
+            <ListGroup.Item
+              key={session.id}
+              action
+              active={session.id === activeSession}
+              onClick={() => onSwitchSession(session.id)}
+              className="d-flex justify-content-between align-items-center"
+              as="div" // Prevent nested button issue
+            >
+              <span className="text-truncate" style={{ maxWidth: "160px" }}>
+                {session.preview?.slice(0, 20) || "Untitled session"}
+              </span>
+              <Button
+                variant="outline-danger"
+                size="sm"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (window.confirm("Delete this session?")) {
+                    onDeleteSession(session.id);
+                  }
+                }}
+              >
+                &times;
+              </Button>
+            </ListGroup.Item>
+          ))}
+        </ListGroup>
+      </div>
+    </Container>
   );
 };
 
