@@ -1,0 +1,45 @@
+[2025-05-27 14:11:33,814] [INFO] Starting uvicorn server...
+[2025-05-27 14:11:33,828] [INFO] FastAPI application is starting up.
+[2025-05-27 14:12:32,135] [INFO] FastAPI application is shutting down.
+[2025-05-27 14:14:07,436] [INFO] Starting uvicorn server...
+[2025-05-27 14:14:07,450] [INFO] FastAPI application is starting up.
+[2025-05-27 14:14:12,553] [INFO] [AUTH] User 'user2' logged in successfully.
+[2025-05-27 14:14:12,568] [INFO] [user2] Requested session list.
+[2025-05-27 14:14:12,568] [INFO] [user2] Requested session list.
+[2025-05-27 14:14:12,575] [INFO] [user2] Accessed history for session: afb2e9fb-4a20-4e7d-9a1e-95eefd8d1884
+[2025-05-27 14:14:15,349] [INFO] [user2] Requested session list.
+[2025-05-27 14:14:15,351] [INFO] [user2] Requested session list.
+[2025-05-27 14:14:15,353] [INFO] [user2] Accessed history for session: afb2e9fb-4a20-4e7d-9a1e-95eefd8d1884
+[2025-05-27 14:14:16,597] [INFO] [user2] Accessed history for session: d50e4e6b-ed67-4a27-b386-2cae6bd7cf84
+[2025-05-27 14:14:21,637] [INFO] [user2] Created new session: 6c8833ec-0471-47e6-afcf-1d4b60d4899d
+[2025-05-27 14:14:21,639] [INFO] [user2] Requested session list.
+[2025-05-27 14:14:21,643] [INFO] [user2] Accessed history for session: 6c8833ec-0471-47e6-afcf-1d4b60d4899d
+[2025-05-27 14:14:36,312] [INFO] [user2] Generating response for session 6c8833ec-0471-47e6-afcf-1d4b60d4899d with prompt: Who is Diocletian?...
+[2025-05-27 14:14:53,958] [INFO] [user2] Inference took 17645 ms for session 6c8833ec-0471-47e6-afcf-1d4b60d4899d
+[2025-05-27 14:14:53,962] [INFO] [user2] Accessed history for session: 6c8833ec-0471-47e6-afcf-1d4b60d4899d
+[2025-05-27 14:15:15,294] [INFO] [user2] Accessed history for session: d50e4e6b-ed67-4a27-b386-2cae6bd7cf84
+[2025-05-27 14:15:16,985] [INFO] [user2] Deleted session: d50e4e6b-ed67-4a27-b386-2cae6bd7cf84
+[2025-05-27 14:15:16,988] [INFO] [user2] Accessed history for session: afb2e9fb-4a20-4e7d-9a1e-95eefd8d1884
+[2025-05-27 14:15:23,383] [INFO] [user2] Accessed history for session: 6c8833ec-0471-47e6-afcf-1d4b60d4899d
+[2025-05-27 14:19:00,237] [WARNING] [AUTH] Failed login attempt for username: user3
+[2025-05-27 14:19:10,707] [INFO] [AUTH] User 'user2' logged in successfully.
+[2025-05-27 14:19:10,717] [INFO] [user2] Requested session list.
+[2025-05-27 14:19:10,718] [INFO] [user2] Requested session list.
+[2025-05-27 14:19:10,720] [INFO] [user2] Accessed history for session: afb2e9fb-4a20-4e7d-9a1e-95eefd8d1884
+[2025-05-27 14:19:29,058] [INFO] [user2] Created new session: 579b0cb3-13b6-48c4-8f37-168eba39932c
+[2025-05-27 14:19:29,062] [INFO] [user2] Requested session list.
+[2025-05-27 14:19:29,066] [INFO] [user2] Accessed history for session: 579b0cb3-13b6-48c4-8f37-168eba39932c
+[2025-05-27 14:19:46,197] [INFO] [user2] Generating response for session 579b0cb3-13b6-48c4-8f37-168eba39932c with prompt: How many seeds are there in an...
+[2025-05-27 14:19:57,142] [INFO] [user2] Inference took 10945 ms for session 579b0cb3-13b6-48c4-8f37-168eba39932c
+[2025-05-27 14:19:57,146] [INFO] [user2] Accessed history for session: 579b0cb3-13b6-48c4-8f37-168eba39932c
+[2025-05-27 14:20:12,555] [INFO] [user2] Created new session: 8df12613-1b1b-44e4-836d-0590b9a3c521
+[2025-05-27 14:20:12,559] [INFO] [user2] Requested session list.
+[2025-05-27 14:20:12,563] [INFO] [user2] Accessed history for session: 8df12613-1b1b-44e4-836d-0590b9a3c521
+[2025-05-27 14:20:16,701] [INFO] [user2] Deleted session: 8df12613-1b1b-44e4-836d-0590b9a3c521
+[2025-05-27 14:20:16,704] [INFO] [user2] Accessed history for session: afb2e9fb-4a20-4e7d-9a1e-95eefd8d1884
+[2025-05-27 14:20:24,917] [INFO] [user2] Created new session: 20305c50-78b1-4d08-ae32-730bd5a2f30a
+[2025-05-27 14:20:24,920] [INFO] [user2] Requested session list.
+[2025-05-27 14:20:24,923] [INFO] [user2] Accessed history for session: 20305c50-78b1-4d08-ae32-730bd5a2f30a
+[2025-05-27 14:20:28,765] [INFO] [user2] Deleted session: 20305c50-78b1-4d08-ae32-730bd5a2f30a
+[2025-05-27 14:20:28,768] [INFO] [user2] Accessed history for session: afb2e9fb-4a20-4e7d-9a1e-95eefd8d1884
+[2025-05-27 14:25:28,588] [INFO] FastAPI application is shutting down.

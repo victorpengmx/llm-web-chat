@@ -6,6 +6,8 @@ from jose import JWTError, jwt
 from pydantic import BaseModel
 import time
 
+from logger import logger
+
 SECRET_KEY = "supersecretkey"  # Replace with env var in production
 ALGORITHM = "HS256"
 
@@ -37,6 +39,7 @@ def login(form_data: OAuth2PasswordRequestForm = Depends()):
     password = form_data.password
 
     if username not in users_db or users_db[username] != password:
+        logger.warning(f"[AUTH] Failed login attempt for username: {username}")
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
 
     token_data = {
@@ -45,6 +48,8 @@ def login(form_data: OAuth2PasswordRequestForm = Depends()):
     }
     token = jwt.encode(token_data, SECRET_KEY, algorithm=ALGORITHM)
 
+    logger.info(f"[AUTH] User '{username}' logged in successfully.")
+
     return {"access_token": token, "token_type": "bearer"}
 
 def get_current_user(token: str = Depends(oauth2_scheme)) -> str:
@@ -52,7 +57,9 @@ def get_current_user(token: str = Depends(oauth2_scheme)) -> str:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         username = payload.get("sub")
         if username is None:
+            logger.warning(f"[AUTH] Token missing subject field.")
             raise HTTPException(status_code=401, detail="Invalid token")
         return username
     except JWTError:
+        logger.warning("[AUTH] Invalid token used.")
         raise HTTPException(status_code=401, detail="Invalid token")
