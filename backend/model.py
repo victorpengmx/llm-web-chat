@@ -1,23 +1,24 @@
 from vllm import AsyncLLMEngine, AsyncEngineArgs, SamplingParams
+import config
 
 engine_args = AsyncEngineArgs(
-    model="/home/greaterheat/models/deepseek-r1-32b",
-    tensor_parallel_size=2,
-    pipeline_parallel_size=1,
+    model=config.MODEL_PATH,
+    tensor_parallel_size=config.TENSOR_PARALLEL_SIZE,
+    pipeline_parallel_size=config.PIPELINE_PARALLEL_SIZE,
     dtype="auto",
     trust_remote_code=True,
-    quantization="bitsandbytes",
-    max_model_len=8192,
-    block_size=16,
-    gpu_memory_utilization=0.70,
-    enforce_eager=True,  # important for streaming
+    quantization=config.QUANTIZATION,
+    max_model_len=config.MAX_MODEL_LEN,
+    block_size=config.BLOCK_SIZE,
+    gpu_memory_utilization=config.GPU_MEMORY_UTILIZATION,
+    enforce_eager=True,
 )
 
 llm = AsyncLLMEngine.from_engine_args(engine_args)
 
 sampling_params = SamplingParams(
-    temperature=0.6,
-    top_p=0.95,
-    max_tokens=512
+    temperature=config.TEMPERATURE,
+    top_p=config.TOP_P,
+    max_tokens=config.MAX_TOKENS
 )
 
