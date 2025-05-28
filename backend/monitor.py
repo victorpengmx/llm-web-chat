@@ -4,11 +4,13 @@ import time
 import psutil
 
 router = APIRouter()
-last_inference_time_ms = None
 
-# GPU tracking setup
+last_inference_time_ms = None
+latest_gpu_utilizations = []  # List of per-GPU utilization
+
+# GPU tracking initialization
 try:
-    import pynvml
+    import pynvml # NVIDIA Management Library for GPU stats
     pynvml.nvmlInit()
     has_gpu = True
     num_gpus = pynvml.nvmlDeviceGetCount()
@@ -16,8 +18,6 @@ try:
 except Exception:
     has_gpu = False
     gpu_handles = []
-
-latest_gpu_utilizations = []  # List of per-GPU utilization
 
 # Background thread to sample GPU utilization
 def gpu_utilization_tracker():
@@ -35,6 +35,7 @@ def gpu_utilization_tracker():
 
 @router.on_event("startup")
 def start_gpu_monitor():
+    # Starts GOU utilization tracker thread
     if has_gpu:
         thread = threading.Thread(target=gpu_utilization_tracker, daemon=True)
         thread.start()
@@ -68,6 +69,7 @@ def track_latency(route_func):
 
 @router.get("/metrics")
 def get_metrics(request: Request):
+    # Returns system resource usage: GPU, CPU memory, and last inference time
     gpu_data = []
     if has_gpu:
         for i, handle in enumerate(gpu_handles):

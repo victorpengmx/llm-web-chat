@@ -15,24 +15,28 @@ USERS_FILE = Path("storage/users.json")
 
 # If users.json doesn't exist, create it with a default user
 if not USERS_FILE.exists():
-    USERS_FILE.parent.mkdir(parents=True, exist_ok=True)  # Ensure 'storage' folder exists
+    USERS_FILE.parent.mkdir(parents=True, exist_ok=True)  # Create 'storage' folder if it does not exist
     default_users = {
         "user1": "test123"
     }
     with USERS_FILE.open("w", encoding="utf-8") as f:
         json.dump(default_users, f, indent=2)
 
-# Load users from JSON file
+# Load user info into memory
 with USERS_FILE.open("r", encoding="utf-8") as f:
     users_db = json.load(f)
 
+# Pydantic model for JWT response
 class Token(BaseModel):
     access_token: str
     token_type: str
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")
+
 router = APIRouter()
 
+# Endpoint: POST /auth/token
+# Validates username/password and returns a JWT token
 @router.post("/token", response_model=Token)
 def login(form_data: OAuth2PasswordRequestForm = Depends()):
     username = form_data.username
@@ -52,6 +56,7 @@ def login(form_data: OAuth2PasswordRequestForm = Depends()):
 
     return {"access_token": token, "token_type": "bearer"}
 
+# Extract and validate JWT from authorization header
 def get_current_user(token: str = Depends(oauth2_scheme)) -> str:
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])

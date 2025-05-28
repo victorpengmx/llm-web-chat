@@ -9,7 +9,7 @@ from logger import logger
 
 app = FastAPI()
 
-# Add CORS middleware first
+# Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173"],
@@ -18,12 +18,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Then include routers
 app.include_router(auth_router, prefix="/auth")
 app.include_router(chat_router)
 app.include_router(monitor_router)
 
-# Attach shared state
+# Shared application state to store timestamp of last inference request
 app.state.last_inference_time_ms = None
 
 # Log startup
@@ -31,6 +30,7 @@ app.state.last_inference_time_ms = None
 async def on_startup():
     logger.info("FastAPI application is starting up.")
 
+# Log shutdown
 @app.on_event("shutdown")
 async def on_shutdown():
     logger.info("FastAPI application is shutting down.")

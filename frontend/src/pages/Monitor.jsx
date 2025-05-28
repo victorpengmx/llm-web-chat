@@ -9,8 +9,12 @@ import {
   Col,
 } from "react-bootstrap";
 
+/**
+ * Monitor component displays real-time system usage metrics.
+ * Fetches backend GPU, memory, and inference time data periodically.
+ */
 const Monitor = () => {
-  const [data, setData] = useState(null);
+  const [data, setData] = useState(null); // Holds metrics fetched from the backend
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
@@ -26,11 +30,12 @@ const Monitor = () => {
       }
     };
 
-    fetchMonitorData();
+    fetchMonitorData(); // Initial fetch
     const interval = setInterval(fetchMonitorData, 2000); // Refresh every 2s
-    return () => clearInterval(interval);
+    return () => clearInterval(interval); // Cleanup interval on unmount
   }, []);
 
+  // Destructure monitoring data and use empty defaults to prevent crashes
   const { gpus = [], memory, inference_time_ms } = data || {};
 
   return (
@@ -74,6 +79,7 @@ const Monitor = () => {
             <p className="text-muted">GPU data not available.</p>
           )}
 
+          {/* Memory Section */}
           {memory ? (
             <>
               <h4 className="mt-4 text-secondary">System Memory</h4>
@@ -85,6 +91,7 @@ const Monitor = () => {
             <p className="text-muted">Memory data not available.</p>
           )}
 
+          {/* Inference Time Section */}
           <h4 className="mt-4 text-secondary">Inference</h4>
           <p>
             <strong>Last inference time:</strong>{" "}

@@ -861,3 +861,10 @@
 [2025-05-27 17:16:03,090] [INFO] [user2] Requested session list.
 [2025-05-27 17:16:03,094] [INFO] [user2] Accessed history for session: afb2e9fb-4a20-4e7d-9a1e-95eefd8d1884
 [2025-05-27 17:16:03,097] [INFO] [user2] Requested session list.
+[2025-05-27 17:19:54,789] [INFO] FastAPI application is shutting down.
+[2025-05-27 17:29:37,953] [INFO] Starting uvicorn server...
+[2025-05-27 17:29:37,966] [INFO] FastAPI application is starting up.
+[2025-05-27 17:47:01,445] [INFO] FastAPI application is shutting down.
+[2025-05-27 18:04:35,716] [INFO] Starting uvicorn server...
+[2025-05-27 18:04:35,731] [INFO] FastAPI application is starting up.
+[2025-05-27 18:12:08,722] [INFO] FastAPI application is shutting down.

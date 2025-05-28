@@ -10,23 +10,35 @@ import {
   Card,
 } from "react-bootstrap";
 
+/**
+ * Login component for user authentication.
+ * Handles username/password input, form submission,
+ * error handling, and token storage.
+ */
 export default function Login() {
+  // Form input states
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  
+  // UI state
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  
+  // Context function to store token
   const { setToken } = useAuth();
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault();// Prevent default form reload
     setError(null);
     setLoading(true);
 
     try {
+      // Format data for x-www-form-urlencoded
       const formData = new URLSearchParams();
       formData.append("username", username);
       formData.append("password", password);
 
+      // Send POST request to auth endpoint
       const res = await fetch("http://localhost:8000/auth/token", {
         method: "POST",
         headers: {
@@ -41,7 +53,7 @@ export default function Login() {
       }
 
       const data = await res.json();
-      setToken(data.access_token, username);
+      setToken(data.access_token, username); // Save token in context
     } catch (err) {
       setError(err.message);
     } finally {
@@ -51,15 +63,18 @@ export default function Login() {
 
   return (
     <Container className="d-flex justify-content-center align-items-center min-vh-100">
+      {/* Center the login form vertically and horizontally */}
       <Row className="w-100">
         <Col md={{ span: 6, offset: 3 }}>
           <Card>
             <Card.Body>
               <h2 className="mb-4 text-center">Login</h2>
 
+              {/* Display error alert if login failed */}
               {error && <Alert variant="danger">{error}</Alert>}
 
               <Form onSubmit={handleSubmit}>
+                {/* Username input */}
                 <Form.Group className="mb-3" controlId="username">
                   <Form.Label>Username</Form.Label>
                   <Form.Control
@@ -71,6 +86,7 @@ export default function Login() {
                   />
                 </Form.Group>
 
+                {/* Password input */}
                 <Form.Group className="mb-4" controlId="password">
                   <Form.Label>Password</Form.Label>
                   <Form.Control
@@ -81,6 +97,7 @@ export default function Login() {
                   />
                 </Form.Group>
 
+                {/* Submit button with loading state */}
                 <div className="d-grid">
                   <Button type="submit" variant="primary" disabled={loading}>
                     {loading ? (

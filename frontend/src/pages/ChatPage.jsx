@@ -6,14 +6,20 @@ import Sidebar from "../components/SideBar";
 import ChatWindow from "../components/ChatWindow";
 import ChatInput from "../components/ChatInput";
 
+/**
+ * ChatPage contains the Sidebar, Chatwindow and ChatInput components.
+ * Handles logic for creating new sessions, switching and deleting sessions.
+ * Handles logic for logging out.
+ */
 const ChatPage = () => {
   const { token: authToken, username, logout, registerOnLogout } = useAuth();
 
-  const [messages, setMessages] = useState([]);
-  const [sessions, setSessions] = useState([]);
-  const [activeSession, setActiveSession] = useState(null);
-  const [isGenerating, setIsGenerating] = useState(false);
+  const [messages, setMessages] = useState([]); // Current messages in active session
+  const [sessions, setSessions] = useState([]); // List of all sessions
+  const [activeSession, setActiveSession] = useState(null); // Currently selected session ID
+  const [isGenerating, setIsGenerating] = useState(false); // Whether a response is currently streaming
 
+  // Clear state when user logs out
   useEffect(() => {
     const unregister = registerOnLogout(() => {
       setMessages([]);
@@ -23,11 +29,13 @@ const ChatPage = () => {
     return unregister;
   }, []);
 
+  // Fetch sessions after login
   useEffect(() => {
     if (!authToken) return;
     fetchSessions();
   }, [authToken]);
 
+  // Fetch user's sessions from backend
   const fetchSessions = async () => {
     try {
       const res = await fetch("http://localhost:8000/sessions", {
@@ -41,6 +49,7 @@ const ChatPage = () => {
     }
   };
 
+  // Automatically switch to the first session if none is selected
   useEffect(() => {
     if (sessions.length > 0 && !activeSession) {
       switchToSession(sessions[0].id);
@@ -56,7 +65,7 @@ const ChatPage = () => {
       if (!res.ok) throw new Error("Failed to fetch session history");
       const data = await res.json();
       setMessages(data);
-      await fetchSessions();
+      await fetchSessions(); // Refresh session list
     } catch (error) {
       console.error(error);
     }
@@ -87,6 +96,7 @@ const ChatPage = () => {
       const newSessions = sessions.filter((s) => s.id !== sessionId);
       setSessions(newSessions);
 
+      // If active session was deleted, switch to first available or clear state
       if (sessionId === activeSession) {
         if (newSessions.length > 0) {
           await switchToSession(newSessions[0].id);
@@ -108,11 +118,14 @@ const ChatPage = () => {
     setIsGenerating(true);
   };
 
+  // Handler for updating streamed response text
   const handleStreamUpdate = (delta, isDone = false, isError = false) => {
     setMessages((prev) => {
       const updated = [...prev];
       const last = updated[updated.length - 1];
       if (!last) return prev;
+      
+      // Append delta to last response
       updated[updated.length - 1] = {
         ...last,
         response: last.response + delta,
@@ -127,6 +140,7 @@ const ChatPage = () => {
 
   return (
     <Container fluid className="d-flex p-0 vh-100">
+      {/* Sidebar: left column with session controls and logout */}
       <Col xs={12} md={3} lg={2} className="d-flex flex-column border-end p-0 overflow-hidden">
         <Sidebar
           username={username}
@@ -138,10 +152,14 @@ const ChatPage = () => {
           activeSession={activeSession}
         />
       </Col>
+
+      {/* Main chat area */}
       <Col xs={12} md={9} lg={10} className="d-flex flex-column p-0 overflow-hidden">
         <div className="flex-grow-1 overflow-auto">
           <ChatWindow messages={messages} />
         </div>
+
+        {/* Input only shown when a session is active */}
         {activeSession && (
           <ChatInput
             authToken={authToken}
