@@ -4,4 +4,9 @@ __pycache__/
 # Storage files
 backend/storage/
 
-node_modules
+node_modules/
+
+.env
+
+logs
+*.log

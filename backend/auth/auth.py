@@ -6,10 +6,11 @@ from jose import JWTError, jwt
 from pydantic import BaseModel
 import time
 
+from config import JWT_SECRET, JWT_ALGORITHM
 from logger import logger
 
-SECRET_KEY = "supersecretkey"  # Replace with env var in production
-ALGORITHM = "HS256"
+SECRET_KEY = JWT_SECRET
+ALGORITHM = JWT_ALGORITHM
 
 USERS_FILE = Path("storage/users.json")
 

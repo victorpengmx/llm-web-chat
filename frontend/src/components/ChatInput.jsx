@@ -24,6 +24,8 @@ const ChatInput = ({
   const [isGenerating, setIsGenerating] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
 
+  const baseUrl = import.meta.env.VITE_API_BASE_URL;
+
   /**
    * Submits the current prompt to the backend for streaming generation.
    * Uses Fetch API to POST the prompt and reads from a streaming response.
@@ -39,7 +41,7 @@ const ChatInput = ({
     try {
       // Send prompt to backend for streaming generation
       const res = await fetch(
-        `http://localhost:8000/generate/stream/${sessionId}`,
+        `${baseUrl}/generate/stream/${sessionId}`,
         {
           method: "POST",
           headers: {

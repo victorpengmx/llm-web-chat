@@ -4,13 +4,10 @@ from fastapi import Depends, HTTPException
 from starlette.status import HTTP_429_TOO_MANY_REQUESTS
 
 from auth.auth import get_current_user
+from config import RATE_LIMIT, RATE_WINDOW
 
 # Track list of request timestamps for each user
 request_log = defaultdict(list)
-
-# Rate limit config
-RATE_LIMIT = 2
-RATE_WINDOW = 60  # seconds
 
 # Dependency to apply per-user rate limiting
 def rate_limiter(user: str = Depends(get_current_user)):

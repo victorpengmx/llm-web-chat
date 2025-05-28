@@ -18,10 +18,12 @@ const Monitor = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
+  const baseUrl = import.meta.env.VITE_API_BASE_URL;
+
   useEffect(() => {
     const fetchMonitorData = async () => {
       try {
-        const res = await fetch("http://localhost:8000/metrics");
+        const res = await fetch(`${baseUrl}/metrics`);
         if (!res.ok) throw new Error("Failed to fetch monitor data");
         const json = await res.json();
         setData(json);

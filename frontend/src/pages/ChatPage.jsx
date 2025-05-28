@@ -19,6 +19,8 @@ const ChatPage = () => {
   const [activeSession, setActiveSession] = useState(null); // Currently selected session ID
   const [isGenerating, setIsGenerating] = useState(false); // Whether a response is currently streaming
 
+  const baseUrl = import.meta.env.VITE_API_BASE_URL;
+
   // Clear state when user logs out
   useEffect(() => {
     const unregister = registerOnLogout(() => {
@@ -38,7 +40,7 @@ const ChatPage = () => {
   // Fetch user's sessions from backend
   const fetchSessions = async () => {
     try {
-      const res = await fetch("http://localhost:8000/sessions", {
+      const res = await fetch(`${baseUrl}/sessions`, {
         headers: { Authorization: `Bearer ${authToken}` },
       });
       if (!res.ok) throw new Error("Failed to fetch sessions");
@@ -59,7 +61,7 @@ const ChatPage = () => {
   const switchToSession = async (sessionId) => {
     setActiveSession(sessionId);
     try {
-      const res = await fetch(`http://localhost:8000/sessions/${sessionId}/history`, {
+      const res = await fetch(`${baseUrl}/sessions/${sessionId}/history`, {
         headers: { Authorization: `Bearer ${authToken}` },
       });
       if (!res.ok) throw new Error("Failed to fetch session history");
@@ -73,7 +75,7 @@ const ChatPage = () => {
 
   const createNewSession = async () => {
     try {
-      const res = await fetch("http://localhost:8000/sessions", {
+      const res = await fetch(`${baseUrl}/sessions`, {
         method: "POST",
         headers: { Authorization: `Bearer ${authToken}` },
       });
@@ -88,7 +90,7 @@ const ChatPage = () => {
 
   const deleteSession = async (sessionId) => {
     try {
-      await fetch(`http://localhost:8000/sessions/${sessionId}`, {
+      await fetch(`${baseUrl}/sessions/${sessionId}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${authToken}` },
       });

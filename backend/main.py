@@ -6,13 +6,14 @@ from chat import router as chat_router
 from auth.auth import router as auth_router
 from monitor import router as monitor_router
 from logger import logger
+from config import FRONTEND_ORIGIN
 
 app = FastAPI()
 
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=[FRONTEND_ORIGIN],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

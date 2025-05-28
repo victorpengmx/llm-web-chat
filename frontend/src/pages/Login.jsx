@@ -27,6 +27,8 @@ export default function Login() {
   // Context function to store token
   const { setToken } = useAuth();
 
+  const baseUrl = import.meta.env.VITE_API_BASE_URL;
+
   const handleSubmit = async (e) => {
     e.preventDefault();// Prevent default form reload
     setError(null);
@@ -39,7 +41,7 @@ export default function Login() {
       formData.append("password", password);
 
       // Send POST request to auth endpoint
-      const res = await fetch("http://localhost:8000/auth/token", {
+      const res = await fetch(`${baseUrl}/auth/token`, {
         method: "POST",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
