@@ -1,0 +1,11 @@
+# requirements.txt
+# Partial list — regenerate with `pip freeze` in your working env
+fastapi
+uvicorn
+python-dotenv
+jose
+pydantic
+vllm
+react-bootstrap
+starlette
+functools
