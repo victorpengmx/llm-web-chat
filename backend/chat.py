@@ -118,31 +118,47 @@ async def generate_text_stream(
     # Streams generated tokens one by one to frontend
     # Saves complete response to memory
     async def token_stream():
-        start_time = time.perf_counter() # Start time for calculating inference time
-
+        start_time = time.perf_counter()
         results_generator = llm.generate(prompt, sampling_params, request_id=request_id)
+
+
         previous_text = ""
         full_response = ""
+        token_count = 0
 
         async for request_output in results_generator:
-            text = request_output.outputs[0].text
-            delta = text[len(previous_text):] # Only return newly generated text
+            output = request_output.outputs[0]
+            text = output.text
+            delta = text[len(previous_text):]
             previous_text = text
             full_response = text
-            yield delta # Streamed to frontend
 
-        # Save inference time and full response after generation completes
+            # Count tokens from token_ids (if available)
+            token_count = len(output.token_ids)
+
+            yield delta
+
         end_time = time.perf_counter()
         inference_time_ms = round((end_time - start_time) * 1000)
         request.app.state.last_inference_time_ms = inference_time_ms
+        request.app.state.last_token_count = token_count  # Expose to test client
 
         logger.info(f"[{user}] Inference took {inference_time_ms} ms for session {session_id}")
+        logger.info(f"[{user}] Token count: {token_count}")
 
-        # Save prompt and response to memory
         chat_history[user][session_id][entry_id] = {
             "prompt": prompt,
             "response": full_response.strip()
         }
         save_chat_history()
 
+
     return StreamingResponse(token_stream(), media_type="text/plain")
+
+@router.get("/generate/stats")
+async def get_last_generation_stats(request: Request):
+    return {
+        "inference_time_ms": getattr(request.app.state, "last_inference_time_ms", None),
+        "token_count": getattr(request.app.state, "last_token_count", None)
+    }
+
